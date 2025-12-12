@@ -74,3 +74,8 @@ void Jardim::passarTempo() {
     }
 }
 
+Posicao* Jardim::getPosicao(int l, int c) const {
+    if (l < 0 || l >=linhas || c<0 ||c>= colunas) return nullptr;
+    return &grelha[l][c];
+}
+

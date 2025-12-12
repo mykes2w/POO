@@ -37,6 +37,7 @@ private:
     void cmdLarga(stringstream& ss);
     void cmdPega(stringstream& ss);
     void cmdCompra(stringstream& ss);
+    void cmdUsar(int index);
 
     void cmdMove(const string& direcao);
     void cmdEntra(stringstream& ss);

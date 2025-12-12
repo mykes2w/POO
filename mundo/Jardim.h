@@ -19,5 +19,6 @@ public:
     int getLinhas() const;
     int getColunas() const;
     void passarTempo();
+    Posicao* getPosicao(int l, int c) const;
 };
 #endif //TRABALHOPOO_JARDIM_H

@@ -60,6 +60,14 @@ void Simulador::processarComando(const string& linha)
     else if (comando == "colhe") {cmdColhe(ss);}
     else if (comando == "larga") {cmdLarga(ss);}
     else if (comando == "pega") {cmdPega(ss);}
+    else if (comando == "usa") {
+        int index;
+        if (ss >> index) {
+            cmdUsar(index);
+        }else {
+            cout << "Indica o numero da ferramenta (ex: usa 0)" << endl;
+        }
+    }
     else if (comando == "compra") {cmdCompra(ss);}
     else if (comando == "e" || comando == "d" || comando == "c" || comando == "b")
     {
@@ -376,6 +384,31 @@ void Simulador::cmdExecuta(stringstream &ss) {
     }
     ficheiro.close();
     cout << "Fim da execucao do ficheiro" << endl;
+}
+
+void Simulador::cmdUsar(int index) {
+    if (jardineiro==nullptr || jardim == nullptr) return;
+
+    Ferramenta* f = jardineiro->getFerramenta(index);
+
+    if (f==nullptr) {
+        cout << "Nao tens nenhuma ferramenta no bolso " << index << "." << endl;
+        return;
+    }
+
+    int l=jardineiro->getLinha();
+    int c=jardineiro->getColuna();
+
+    Posicao* p=jardim->getPosicao(l,c);
+
+    if (p!=nullptr) {
+        bool suc=f->usar(p);
+        if (suc) {
+            cout << "Usaste a ferramenta" << endl;
+        }else {
+            cout << "nao foi possivel usar a ferramenta" << endl;
+        }
+    }
 }
 
 
