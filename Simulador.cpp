@@ -276,7 +276,6 @@ void Simulador::cmdCompra(stringstream &ss)
     {
         f=new Regador();
         cout << "Compraste um regador" << endl;
-        return;
     }else if (tipo == 'a') {
         f=new Adubo();
         cout << "Compraste um saco deadubo" << endl;
