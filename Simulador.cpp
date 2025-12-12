@@ -279,6 +279,9 @@ void Simulador::cmdCompra(stringstream &ss)
     }else if (tipo == 'a') {
         f=new Adubo();
         cout << "Compraste um saco deadubo" << endl;
+    }else if (tipo=='t') {
+        f=new Tesoura();
+        cout << "Compraste um tesoura" << endl;
     }else {
         cout << "Essa ferramenta nao existe" << endl;
         return;

@@ -7,6 +7,7 @@ class ErvaDaninha : public Planta {
     public:
         ErvaDaninha();
         bool viver(int &aguaSolo, int &nutrientesSolo) override;
+        bool feia() const override {return true;}
         char getChar() const override;
 };
 
