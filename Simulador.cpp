@@ -6,6 +6,9 @@
 #include "plantas/ErvaDaninha.h"
 #include "plantas/Cacto.h"
 #include "plantas/Roseira.h"
+#include "ferramentas/Regador.h"
+#include "ferramentas/Adubo.h"
+#include "ferramentas/Tesoura.h"
 using namespace std;
 
 Simulador::Simulador() :jardim(nullptr),jardineiro(nullptr),running(true) {
@@ -214,7 +217,16 @@ void Simulador::cmdLsolo(stringstream &ss)
 void Simulador::cmdLferr(stringstream &ss)
 {
     if (!validarLixo(ss)) return;
-    cout <<"comando 'lferr' validado." << endl;
+    if (jardineiro==nullptr) return;
+    int tot=jardineiro->getNumFerramentas();
+    cout << "A Mochila do Jardineiro tem " << tot<< " ferramentas"<< endl;
+
+    for (int i=0;i<tot;i++) {
+        Ferramenta* f=jardineiro->getFerramenta(i);
+        if (f!=nullptr) {
+            cout << i <<"Tipo="<< f->getChar() << " e Quantidade=" << f->getQuantidade() << endl;
+        }
+    }
 }
 
 void Simulador::cmdColhe(stringstream &ss)
@@ -251,12 +263,24 @@ void Simulador::cmdCompra(stringstream &ss)
         return;
     }
     if (!validarLixo(ss)) return;
-    if (tipo != 'g' && tipo != 'a' && tipo != 't' && tipo != 'z')
+    Ferramenta* f = nullptr;
+    if (tipo == 'g')
     {
-        cout << "ERRO: Tipo de ferramenta invalido (g, a, t, z)." << endl;
+        f=new Regador();
+        cout << "Compraste um regador" << endl;
+        return;
+    }else if (tipo == 'a') {
+        f=new Adubo();
+        cout << "Compraste um saco deadubo" << endl;
+    }else {
+        cout << "Essa ferramenta nao existe" << endl;
         return;
     }
-    cout << "Comando 'compra " << tipo << "' validado." << endl;
+
+    if (jardineiro!=nullptr&&f!=nullptr) {
+        jardineiro->apanharFerramenta(f);
+    }
+
 }
 void Simulador::cmdMove(const string &direcao)
 {
