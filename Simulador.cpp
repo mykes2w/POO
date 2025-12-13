@@ -199,7 +199,28 @@ void Simulador::cmdLplanta(stringstream &ss)
     }
     if (!validarLixo(ss)) return;
     if (!validarPosicao(pos)) return;
-    cout << "Comando 'lplanta" <<pos <<"' validado." <<endl;
+    int l = pos[0] - 'a';
+    int c = pos[1] - 'a';
+
+    if (jardim==nullptr) return;
+    Posicao* p =jardim->getPosicao(l,c);
+    if (p!=nullptr) {
+        if (p->temPlanta()) {
+            Planta* planta = p->getPlanta();
+            cout << "Planta na posicao" << pos << endl;
+            cout << "Tipo: " << planta->getChar() << endl;
+            cout << "Idade: " << planta->getIdade() << endl;
+            cout << "Agua interna: " << planta->getAgua() << endl;
+            cout << "Nutrientes internos: " << planta->getNutrientes() << endl;
+            if (planta->feia()) {
+                cout << "Planta feia" << endl;
+            }else {
+                cout << "Planta Bonita" << endl;
+            }
+        }else {
+            cout << "Nao existe nenhuma planta na posicao " << pos << endl;
+        }
+    }
 }
 void Simulador::cmdLarea(stringstream &ss) {
     if (!validarLixo(ss)) return;
