@@ -7,6 +7,7 @@
 
 class Adubo : public Ferramenta {
 public:
+    static const int custo=20;
     Adubo() : Ferramenta(Settings::Adubo::capacidade) {}
 
     char getChar() const override{return 'a';}

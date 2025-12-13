@@ -7,8 +7,6 @@ Cacto::Cacto() {
     this->nutrientes = 0;
     this->ctgAguaMais = 0;
     this->ctgFaltaNutr = 0;
-
-
 }
 char Cacto::getChar() const {
     return 'C';
@@ -53,5 +51,10 @@ bool Cacto::viver(int &aguaSolo, int &nutrientesSolo) {
 
     return true;
 }
+
+int Cacto::getPreco() const {
+    return preco;
+}
+
 
 

@@ -9,8 +9,10 @@
 
 class PlantaExotica : public Planta {
 public:
+    static const int preco=100;
     PlantaExotica();
     bool viver(int &aguaSolo, int &nutrientesSolo) override;
+    int getPreco() const override;
     char getChar() const override;
 };
 

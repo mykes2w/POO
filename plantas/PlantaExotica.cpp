@@ -15,3 +15,8 @@ bool PlantaExotica::viver(int &aguaSolo, int &nutrientesSolo) {
     return true;
 }
 
+int PlantaExotica::getPreco() const {
+    return preco;
+}
+
+

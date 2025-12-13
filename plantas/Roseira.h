@@ -6,8 +6,10 @@
 
 class Roseira : public Planta {
     public:
+        static const int preco=30;
         Roseira();
         bool viver(int &aguaSolo, int &nutrientesSolo) override;
+        int getPreco() const override;
         char getChar() const override;
 };
 

@@ -15,6 +15,7 @@ public:
     virtual bool viver(int &aguaSolo,int &nutrientesSolo)=0;
     virtual char getChar() const=0;
     virtual bool feia() const {return false;}
+    virtual int getPreco() const=0;
 
     int getIdade() const {return idade;};
     int getAgua() const {return agua;};

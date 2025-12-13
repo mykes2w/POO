@@ -199,7 +199,28 @@ void Simulador::cmdLplanta(stringstream &ss)
     }
     if (!validarLixo(ss)) return;
     if (!validarPosicao(pos)) return;
-    cout << "Comando 'lplanta" <<pos <<"' validado." <<endl;
+    int l = pos[0] - 'a';
+    int c = pos[1] - 'a';
+
+    if (jardim==nullptr) return;
+    Posicao* p =jardim->getPosicao(l,c);
+    if (p!=nullptr) {
+        if (p->temPlanta()) {
+            Planta* planta = p->getPlanta();
+            cout << "Planta na posicao" << pos << endl;
+            cout << "Tipo: " << planta->getChar() << endl;
+            cout << "Idade: " << planta->getIdade() << endl;
+            cout << "Agua interna: " << planta->getAgua() << endl;
+            cout << "Nutrientes internos: " << planta->getNutrientes() << endl;
+            if (planta->feia()) {
+                cout << "Planta feia" << endl;
+            }else {
+                cout << "Planta Bonita" << endl;
+            }
+        }else {
+            cout << "Nao existe nenhuma planta na posicao " << pos << endl;
+        }
+    }
 }
 void Simulador::cmdLarea(stringstream &ss) {
     if (!validarLixo(ss)) return;
@@ -240,13 +261,27 @@ void Simulador::cmdLferr(stringstream &ss)
 void Simulador::cmdColhe(stringstream &ss)
 {
     string pos;
-    if (!(ss >> pos)) {
-        cout << "ERRO: Sintaxe invalida. Uso: colhe <lc>" << endl;
-         return;
+    ss>>pos;
+
+    if (pos.length()<2) return;
+    int l=pos[0] - 'a';
+    int c=pos[1] - 'a';
+
+    if (jardineiro->getColheitas() >= Jardineiro::MAX_COLHEITAS) {
+        cout << "Limite de colheitas atingidas neste turno." << endl;
+        return;
     }
-    if (!validarLixo(ss)) return;
-    if (!validarPosicao(pos)) return;
-    cout << "Comando 'colhe" <<pos <<"' validado." << endl;
+    Posicao* p=jardim->getPosicao(l,c);
+    if (p!=nullptr && p->temPlanta()) {
+        Planta* planta = p->getPlanta();
+        int valor= planta->getPreco();
+        jardineiro->receberDinheiro(valor);
+        p->removerPlanta();
+        jardineiro->registarColheitas();
+        cout << "colheste a planta. Ganhaste " << valor << " euros" <<endl;
+    }else {
+        cout << "Nao ha nenhuma planta ai" << endl;
+    }
 }
 void Simulador::cmdLarga(stringstream &ss)
 {
@@ -267,19 +302,23 @@ void Simulador::cmdCompra(stringstream &ss)
 {
     char tipo;
     if (!(ss >> tipo)) {
-        cout << "ERRO: sintaxe invalida. Uso: compra <c>" << endl;
+        cout << "Sintaxe invalida. Usa: compra <c>" << endl;
         return;
     }
     if (!validarLixo(ss)) return;
     Ferramenta* f = nullptr;
+    int custo=0;
     if (tipo == 'g')
     {
+        custo = Regador::custo;
         f=new Regador();
         cout << "Compraste um regador" << endl;
     }else if (tipo == 'a') {
+        custo = Adubo::custo;
         f=new Adubo();
         cout << "Compraste um saco deadubo" << endl;
     }else if (tipo=='t') {
+        custo = Tesoura::custo;
         f=new Tesoura();
         cout << "Compraste um tesoura" << endl;
     }else {
@@ -287,15 +326,26 @@ void Simulador::cmdCompra(stringstream &ss)
         return;
     }
 
-    if (jardineiro!=nullptr&&f!=nullptr) {
-        jardineiro->apanharFerramenta(f);
-    }
+   if (f!=nullptr) {
+       if (jardineiro->getDinheiro()>=custo) {
+           jardineiro->gastarDinheiro(custo);
+           jardineiro->apanharFerramenta(f);
+           cout << "Compraste esta ferramenta por "<<custo<< ". Saldo: "<<jardineiro->getDinheiro() << endl;
+       }else {
+           cout <<"Dinheiro insuficiente , tens " <<jardineiro->getDinheiro() << "mas custa " << custo << endl;
+           delete f;
+       }
+   }
 
 }
 void Simulador::cmdMove(const string &direcao)
 {
     if (jardim==nullptr) {
         cout <<"ERRO: Nenhum jardim criado." << endl;
+        return;
+    }
+    if (jardineiro->getMov() >= Jardineiro::MAX_MOV) {
+        cout << "O jardineiro esta cansado (Max " <<Jardineiro::MAX_MOV << " movimentos). Faz 'avanca'." <<endl;
         return;
     }
 
@@ -317,7 +367,10 @@ void Simulador::cmdMove(const string &direcao)
 
     if (l>=0 && l < jardim->getLinhas() && c >= 0 && c < jardim->getColunas()) {
         jardineiro->setPosicao(l,c);
+        jardineiro->registarMov();
+        cout << "Movimentos fietos. " <<jardineiro->getMov() << endl;
         cout << "Jardineiro foi para a " << l <<" "  << c << endl;
+        jardim->desenhar(jardineiro);
     }else {
         cout << "Nao e possivel mover para ai" << endl;
     }

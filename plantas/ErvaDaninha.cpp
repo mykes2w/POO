@@ -14,3 +14,7 @@ bool ErvaDaninha::viver(int &aguaSolo,int &nutrientesSolo) {
     if (nutrientesSolo> 0) {nutrientesSolo--;this->nutrientes++;}
     return true;
 }
+
+int ErvaDaninha::getPreco() const {
+    return preco;
+}

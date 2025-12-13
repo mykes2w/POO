@@ -39,3 +39,7 @@ bool Roseira::viver(int &aguaSolo, int &nutrientesSolo) {
     return true;
 }
 
+int Roseira::getPreco() const {
+    return preco;
+}
+

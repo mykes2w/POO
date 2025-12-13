@@ -8,8 +8,10 @@ private:
         int ctgAguaMais;
         int ctgFaltaNutr;
 public:
+        static const int preco=20;
         Cacto();
         bool viver(int &aguaSolo, int &nutrientesSolo) override;
+        int getPreco() const override;
         char getChar() const override;
 };
 

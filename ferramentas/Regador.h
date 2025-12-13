@@ -6,6 +6,7 @@
 
 class Regador : public Ferramenta{
 public:
+    static const int custo=50;
     Regador():Ferramenta(Settings::Regador::capacidade){}
     char getChar() const override {return 'r';}
     bool usar(Posicao *p) override;
