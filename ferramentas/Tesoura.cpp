@@ -23,3 +23,5 @@ bool Tesoura::usar(Posicao *p) {
     }
 }
 
+Ferramenta* Tesoura::clone() const {return new Tesoura(*this);}
+

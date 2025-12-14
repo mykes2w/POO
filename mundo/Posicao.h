@@ -1,9 +1,6 @@
-//
-// Created by miigu on 01/11/2025.
-//
-
 #ifndef TRABALHOPOO_POSICAO_H
 #define TRABALHOPOO_POSICAO_H
+#include "Ferramenta.h"
 #include "../Settings.h"
 
 class Planta;
@@ -13,6 +10,7 @@ private:
     int agua;
     int nutrientes;
     Planta* planta;
+    Ferramenta* ferramenta;
 
 public:
     Posicao();
@@ -28,6 +26,11 @@ public:
     int getNutrientes() const;
     void setAgua(int a);
     void setNutrientes(int n);
+
+    bool temFerramenta() const;
+    void adicionarFerramente(Ferramenta* f);
+    Ferramenta* retirarFerramenta();
+    const Ferramenta* getFerramenta() const;
 };
 
 

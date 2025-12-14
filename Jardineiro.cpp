@@ -8,6 +8,7 @@ Jardineiro::Jardineiro():
     contColheitas(0),
     contPlantacoes(0)
 {
+    dentro=true;
 }
 
 Jardineiro::~Jardineiro() {
@@ -74,6 +75,14 @@ void Jardineiro::prepNovoTurno() {
     contPlantacoes=0;
 }
 
+Ferramenta* Jardineiro::largarFerramente(int index) {
+    if (index>=0 && index < (int)mochila.size()) {
+        Ferramenta* f = mochila[index];
+        mochila.erase(mochila.begin()+index);
+        return f;
+    }
+    return nullptr;
+}
 
 
 

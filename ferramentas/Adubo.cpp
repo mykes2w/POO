@@ -20,3 +20,4 @@ bool Adubo::usar(Posicao *p) {
     }
 }
 
+Ferramenta* Adubo::clone() const {return new Adubo(*this);}

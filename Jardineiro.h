@@ -10,7 +10,7 @@ private:
     int linha;
     int coluna;
     std::vector<Ferramenta*> mochila;
-
+    bool dentro;
     int dinheiro,contMov,contColheitas,contPlantacoes;
 public:
     static const int SALDO_INICIAL=500;
@@ -29,6 +29,7 @@ public:
     void apanharFerramenta(Ferramenta* f);
     Ferramenta* getFerramenta(int index) const;
     int getNumFerramentas() const;
+    Ferramenta* largarFerramente(int index);
 
     int getDinheiro() const;
     void gastarDinheiro(int valor);
@@ -40,6 +41,9 @@ public:
     int getPlantacoes() const;
     void registarPlantacoes();
     void prepNovoTurno();
+
+    bool dentroJardim() const {return dentro;}
+    void setDentro(bool d) {dentro=d;}
 };
 
 

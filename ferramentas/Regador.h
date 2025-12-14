@@ -8,7 +8,8 @@ class Regador : public Ferramenta{
 public:
     static const int custo=50;
     Regador():Ferramenta(Settings::Regador::capacidade){}
-    char getChar() const override {return 'r';}
+    Ferramenta* clone() const override;
+    char getChar() const override {return 'g';}
     bool usar(Posicao *p) override;
 };
 

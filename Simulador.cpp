@@ -152,6 +152,10 @@ void Simulador::cmdPlanta(stringstream& ss)
 {
     string pos;
     char tipo;
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
+        return;
+    }
     if (!(ss >> pos >> tipo)) {
         cout << "ERRO: Sintaxe invalida. Uso: planta <lc> <tipo>" << endl;
         return;
@@ -266,7 +270,10 @@ void Simulador::cmdColhe(stringstream &ss)
 {
     string pos;
     ss>>pos;
-
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
+        return;
+    }
     if (pos.length()<2) return;
     int l=pos[0] - 'a';
     int c=pos[1] - 'a';
@@ -289,17 +296,40 @@ void Simulador::cmdColhe(stringstream &ss)
 }
 void Simulador::cmdLarga(stringstream &ss)
 {
-    if (!validarLixo(ss)) return;
-    cout <<"Comando 'larga' validado." << endl;
-}
-void Simulador::cmdPega(stringstream &ss) {
-    int n;
-    if (!(ss >> n) || n <=0) {
-        cout << "ERRO: Sintaxe invalida. Uso pega <n>" << endl;
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
         return;
     }
-    if (!validarLixo(ss)) return;
-    cout << "Comando 'pega" <<n<<"' validado." << endl;
+    int indice;
+    if (ss>>indice) {
+        Posicao* p = jardim->getPosicao(jardineiro->getLinha(),jardineiro->getColuna());
+        if (p->temFerramenta()) {
+            cout << "Ja ha uma ferramenta aqui no chao" << endl;
+            return;
+        }
+        Ferramenta* f = jardineiro->largarFerramente(indice);
+        if (f!=nullptr) {
+            p->adicionarFerramente(f);
+            cout<<"Largaste a ferramenta no chao"<<endl;
+        }else {
+            cout <<"Indice de ferramente invalido" << endl;
+        }
+    }else {
+        cout << "Tens de especificar o indice da ferramenta (ex: larga 0)" <<endl;
+    }
+}
+void Simulador::cmdPega(stringstream &ss) {
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
+        return;
+    }
+    Posicao* p=jardim->getPosicao(jardim->getLinhas(),jardim->getColunas());
+    if (p->temFerramenta()) {
+        Ferramenta* f = p->retirarFerramenta();
+        if (jardineiro->ad)
+    }else {
+        cout << "Nao ha nada aqui para apanhar" <<endl;
+    }
 }
 
 void Simulador::cmdCompra(stringstream &ss)
@@ -344,6 +374,10 @@ void Simulador::cmdCompra(stringstream &ss)
 }
 void Simulador::cmdMove(const string &direcao)
 {
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
+        return;
+    }
     if (jardim==nullptr) {
         cout <<"ERRO: Nenhum jardim criado." << endl;
         return;
@@ -380,18 +414,31 @@ void Simulador::cmdMove(const string &direcao)
     }
 }
 void Simulador::cmdEntra(stringstream &ss) {
-    string pos;
-    if (!(ss >> pos)) {
-        cout << "ERRO: Sintaxe invalida. Uso: entra <lc>" << endl;
+    if (jardineiro->dentroJardim()) {
+        cout<<"O jardineiro ja est dentro do jardim" << endl;
         return;
     }
-    if (!validarLixo(ss)) return;
-    if (!validarPosicao(pos)) return;
-    cout << "Comando 'entra" <<pos <<"'validado." << endl;
+    int l,c;
+    if (ss>>l>>c) {
+        if (l>=0 && l<jardim->getLinhas() && c>=0 && c<jardim->getColunas()) {
+            jardineiro->setPosicao(l,c);
+            jardineiro->setDentro(true);
+            cout << "Entraste no jardim em " <<l<< " " << c<< endl;
+        }else {
+            cout << "Posicao invalida" <<endl;
+        }
+    }else {
+        jardineiro->setDentro(true);
+        cout << "Entraste no jardim" <<endl;
+    }
 }
 void Simulador::cmdSai(stringstream &ss) {
-    if (!validarLixo(ss)) return;
-    cout << "Comando 'sai' validado" << endl;
+    if (!jardineiro->dentroJardim()) {
+        cout << "O jardineiro ja esta fora do jardim" << endl;
+        return;
+    }
+    jardineiro->setDentro(false);
+    cout << "O jardineiro saiu do jardim" << endl;
 }
 void Simulador::cmdGrava(stringstream &ss) {
     string nome;
@@ -459,6 +506,10 @@ void Simulador::cmdExecuta(stringstream &ss) {
 
 void Simulador::cmdUsar(int index) {
     if (jardineiro==nullptr || jardim == nullptr) return;
+    if (!jardineiro->dentroJardim()) {
+        cout << "Tens de entrar no jardim primeiro" << endl;
+        return;
+    }
 
     Ferramenta* f = jardineiro->getFerramenta(index);
 

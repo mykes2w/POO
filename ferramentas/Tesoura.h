@@ -7,6 +7,7 @@ class Tesoura : public Ferramenta{
 public:
     static const int custo=15;
     Tesoura(): Ferramenta(999){}
+    Ferramenta* clone() const override;
     char getChar() const override {return 't';}
     bool usar(Posicao *p) override;
 };

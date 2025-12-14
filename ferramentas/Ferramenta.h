@@ -11,6 +11,7 @@ public:
     virtual ~Ferramenta() {}
     virtual char getChar() const=0;
     virtual bool usar(Posicao* p)=0;
+    virtual Ferramenta* clone() const=0;
     int getQuantidade() const{return quantidade;}
 };
 

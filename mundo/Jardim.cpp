@@ -27,7 +27,7 @@ void Jardim::desenhar(const Jardineiro* jardineiro) {
     for (int i = 0; i < linhas; ++i) {
         cout << (char)('A' + i) << " ";
         for (int j = 0; j < colunas; ++j) {
-            if (jardineiro!=nullptr&&jardineiro->getLinha() == i && jardineiro->getColuna() == j) {
+            if (jardineiro!=nullptr&&jardineiro->dentroJardim()&&jardineiro->getLinha() == i && jardineiro->getColuna() == j) {
                 cout << jardineiro->getChar() << " ";
             }
             else {
@@ -119,6 +119,12 @@ Jardim::Jardim(const Jardim &outro) : linhas(outro.linhas), colunas(outro.coluna
                 Planta* copiaPlanta = outro.grelha[i][j].getPlanta()->clone();
                 grelha[i][j].adicionarPlanta(copiaPlanta);
             }
+
+            if (outro.grelha[i][j].temFerramenta()) {
+                const Ferramenta* fOriginal = outro.grelha[i][j].getFerramenta();
+                Ferramenta* copiaFerramenta = fOriginal->clone();
+                grelha[i][j].adicionarFerramente(copiaFerramenta);
+            }
         }
     }
 }
@@ -147,6 +153,12 @@ Jardim& Jardim::operator=(const Jardim &outro) {
             if (outro.grelha[i][j].temPlanta()) {
                 Planta* copiaPlanta = outro.grelha[i][j].getPlanta()->clone();
                 grelha[i][j].adicionarPlanta(copiaPlanta);
+            }
+
+            if (outro.grelha[i][j].temFerramenta()) {
+                const Ferramenta* fOriginal = outro.grelha[i][j].getFerramenta();
+                Ferramenta* copiaFerramenta = fOriginal->clone();
+                grelha[i][j].adicionarFerramente(copiaFerramenta);
             }
         }
     }

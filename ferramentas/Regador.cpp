@@ -19,4 +19,6 @@ bool Regador::usar(Posicao *p) {
     }
 }
 
+Ferramenta* Regador::clone() const {return new Regador(*this);}
+
 

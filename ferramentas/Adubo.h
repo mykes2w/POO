@@ -9,7 +9,7 @@ class Adubo : public Ferramenta {
 public:
     static const int custo=20;
     Adubo() : Ferramenta(Settings::Adubo::capacidade) {}
-
+    Ferramenta* clone() const override;
     char getChar() const override{return 'a';}
     bool usar(Posicao *p) override;
 
