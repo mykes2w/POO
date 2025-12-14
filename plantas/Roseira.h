@@ -10,6 +10,7 @@ class Roseira : public Planta {
         Roseira();
         bool viver(int &aguaSolo, int &nutrientesSolo) override;
         int getPreco() const override;
+        Planta* duplicar() override;
         char getChar() const override;
 };
 

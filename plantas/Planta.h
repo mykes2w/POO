@@ -16,6 +16,7 @@ public:
     virtual char getChar() const=0;
     virtual bool feia() const {return false;}
     virtual int getPreco() const=0;
+    virtual Planta* duplicar() =0;
 
     int getIdade() const {return idade;};
     int getAgua() const {return agua;};

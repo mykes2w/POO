@@ -56,5 +56,17 @@ int Cacto::getPreco() const {
     return preco;
 }
 
+Planta* Cacto::duplicar(){
+    if (nutrientes>Settings::Cacto::multiplica_nutrientes_maior && agua>Settings::Cacto::multiplica_agua_maior) {
+        Cacto* filho = new Cacto();
+        this->agua/=2;
+        this->nutrientes/=2;
+        filho->agua=this->agua;
+        filho->nutrientes=this->nutrientes;
+        return filho;
+    }
+    return nullptr;
+}
+
 
 

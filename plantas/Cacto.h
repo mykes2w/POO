@@ -13,6 +13,7 @@ public:
         bool viver(int &aguaSolo, int &nutrientesSolo) override;
         int getPreco() const override;
         char getChar() const override;
+        Planta* duplicar() override;
 };
 
 #endif //TRABALHOPOO_CACTO_H

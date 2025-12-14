@@ -43,3 +43,16 @@ int Roseira::getPreco() const {
     return preco;
 }
 
+Planta *Roseira::duplicar() {
+    if (nutrientes>Settings::Roseira::multiplica_nutrientes_maior) {
+        Roseira* filho = new Roseira();
+        this->agua/=2;
+        this->nutrientes/=2;
+        filho->agua=this->agua;
+        filho->nutrientes=this->nutrientes;
+        return filho;
+    }
+    return nullptr;
+}
+
+

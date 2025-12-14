@@ -1,4 +1,5 @@
-    #include "Jardim.h"
+#include "Jardim.h"
+#include "Planta.h"
 #include <iostream>
 using namespace std;
 
@@ -68,6 +69,11 @@ void Jardim::passarTempo() {
                 if (!sobreviveu) {
                     cout << "Planta em " << i << " " << j << " morreu" << endl;
                     grelha[i][j].removerPlanta();
+                }else {
+                    Planta* filho = p->duplicar();
+                    if (filho!=nullptr) {
+                        tentaReproduzir(i,j,filho);
+                    }
                 }
             }
         }
@@ -77,5 +83,24 @@ void Jardim::passarTempo() {
 Posicao* Jardim::getPosicao(int l, int c) const {
     if (l < 0 || l >=linhas || c<0 ||c>= colunas) return nullptr;
     return &grelha[l][c];
+}
+
+void Jardim::tentaReproduzir(int l, int c, Planta* p) {
+    for (int dl=-1;dl<=1;dl++) {
+        for (int dc=-1;dc<=1;dc++) {
+            if (dl==0 && dc==0) continue;
+
+            int nl=l+dl;
+            int nc=c+dc;
+
+            if (nl>=0 && nl<linhas && nc>=0 && nc<colunas) {
+                if (!grelha[nl][nc].temPlanta()) {
+                    grelha[nl][nc].adicionarPlanta(p);
+                    return;
+                }
+            }
+        }
+    }
+    delete p;
 }
 

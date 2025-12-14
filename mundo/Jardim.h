@@ -11,6 +11,8 @@ class Jardim {
     int linhas;
     int colunas;
 
+    void tentaReproduzir(int l,int c,Planta* p);
+
 public:
     Jardim(int l, int c);
     ~Jardim();
