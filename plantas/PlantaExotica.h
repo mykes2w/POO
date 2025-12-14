@@ -11,6 +11,8 @@ public:
     Planta* duplicar() override;
     int getPreco() const override;
     char getChar() const override;
+    Planta* clone() const override;
+
 };
 
 

@@ -54,3 +54,6 @@ int ErvaDaninha::getPreco() const {
     return preco;
 }
 
+Planta* ErvaDaninha::clone() const {return new ErvaDaninha(*this);}
+
+

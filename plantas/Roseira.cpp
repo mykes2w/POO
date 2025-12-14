@@ -55,4 +55,7 @@ Planta *Roseira::duplicar() {
     return nullptr;
 }
 
+Planta* Roseira::clone() const {return new Roseira(*this);}
+
+
 

@@ -14,6 +14,7 @@ public:
         int getPreco() const override;
         char getChar() const override;
         Planta* duplicar() override;
+        Planta* clone() const override;
 };
 
 #endif //TRABALHOPOO_CACTO_H

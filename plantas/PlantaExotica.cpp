@@ -26,4 +26,7 @@ Planta* PlantaExotica::duplicar() {
     return nullptr;
 }
 
+Planta* PlantaExotica::clone() const {return new PlantaExotica(*this);}
+
+
 

@@ -68,5 +68,8 @@ Planta* Cacto::duplicar(){
     return nullptr;
 }
 
+Planta* Cacto::clone() const {return new Cacto(*this);}
+
+
 
 

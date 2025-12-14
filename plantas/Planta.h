@@ -17,6 +17,7 @@ public:
     virtual bool feia() const {return false;}
     virtual int getPreco() const=0;
     virtual Planta* duplicar() =0;
+    virtual Planta* clone() const =0;
 
     int getIdade() const {return idade;};
     int getAgua() const {return agua;};

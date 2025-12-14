@@ -16,6 +16,8 @@ class Jardim {
 public:
     Jardim(int l, int c);
     ~Jardim();
+    Jardim(const Jardim &outro);
+    Jardim& operator= (const Jardim &outro);
     void desenhar(const Jardineiro* jardineiro);
     bool adicionarPlanta(int l, int c,Planta* p);
     int getLinhas() const;

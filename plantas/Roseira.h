@@ -12,6 +12,7 @@ class Roseira : public Planta {
         int getPreco() const override;
         Planta* duplicar() override;
         char getChar() const override;
+        Planta* clone() const override;
 };
 
 

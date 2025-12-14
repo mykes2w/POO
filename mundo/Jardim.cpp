@@ -104,3 +104,53 @@ void Jardim::tentaReproduzir(int l, int c, Planta* p) {
     delete p;
 }
 
+Jardim::Jardim(const Jardim &outro) : linhas(outro.linhas), colunas(outro.colunas){
+    grelha = new Posicao*[linhas];
+    for (int i = 0; i < linhas; ++i) {
+        grelha[i] = new Posicao[colunas];
+    }
+
+    for (int i = 0; i < linhas; ++i) {
+        for (int j = 0; j < colunas; ++j) {
+            grelha[i][j].setAgua(outro.grelha[i][j].getAgua());
+            grelha[i][j].setNutrientes(outro.grelha[i][j].getNutrientes());
+
+            if (outro.grelha[i][j].temPlanta()) {
+                Planta* copiaPlanta = outro.grelha[i][j].getPlanta()->clone();
+                grelha[i][j].adicionarPlanta(copiaPlanta);
+            }
+        }
+    }
+}
+
+Jardim& Jardim::operator=(const Jardim &outro) {
+    if (this==&outro) return *this;
+
+    for (int i = 0; i < linhas; ++i) {
+        delete[] grelha[i];
+    }
+    delete[] grelha;
+
+    linhas = outro.linhas;
+    colunas = outro.colunas;
+
+    grelha= new Posicao*[linhas];
+    for (int i = 0; i < linhas; ++i) {
+        grelha[i] = new Posicao[colunas];
+    }
+
+    for (int i = 0; i < linhas; ++i) {
+        for (int j = 0; j < colunas; ++j) {
+            grelha[i][j].setAgua(outro.grelha[i][j].getAgua());
+            grelha[i][j].setNutrientes(outro.grelha[i][j].getNutrientes());
+
+            if (outro.grelha[i][j].temPlanta()) {
+                Planta* copiaPlanta = outro.grelha[i][j].getPlanta()->clone();
+                grelha[i][j].adicionarPlanta(copiaPlanta);
+            }
+        }
+    }
+
+    return *this;
+}
+
