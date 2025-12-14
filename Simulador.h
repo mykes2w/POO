@@ -3,7 +3,7 @@
 #include "mundo/Jardim.h"
 #include <sstream>
 #include <string>
-
+#include <map>
 #include "Jardineiro.h"
 using namespace std;
 
@@ -12,7 +12,7 @@ class Simulador {
     Jardim* jardim;
     Jardineiro* jardineiro;
     bool running;
-
+    map<string, Jardim*> saves;
 private:
     bool validarPosicao(const string & pos);
     bool validarLixo(stringstream& ss);

@@ -19,6 +19,10 @@ Simulador::~Simulador()
 {
     delete jardim;
     delete jardineiro;
+    for (auto par : saves) {
+        delete par.second;
+    }
+    saves.clear();
 }
 
 void Simulador::iniciar()
@@ -391,21 +395,33 @@ void Simulador::cmdSai(stringstream &ss) {
 }
 void Simulador::cmdGrava(stringstream &ss) {
     string nome;
-    if (!(ss >> nome)) {
-        cout << "ERRO: Sintaxe invalida. Uso: grava <nome>" << endl;
+    ss>>nome;
+
+    if (jardim==nullptr) {
+        cout <<"Nao ha jardim nenhum para gravar" <<endl;
         return;
     }
-    if (!validarLixo(ss)) return;
-    cout << "Comando ' grava" << nome <<"' validado." << endl;
+    if (saves.count(nome)) {
+        delete saves[nome];
+        saves.erase(nome);
+    }
+    saves[nome] = new Jardim(*jardim);
+    cout<<"Jardim gravado com o nome '" << nome << "' " <<endl;
 }
 void Simulador::cmdRecupera(stringstream &ss) {
     string nome;
-    if (!(ss >> nome)) {
-        cout << "ERRO: Sintaxe invalida. Uso: recupera <nome>" << endl;
+    ss>>nome;
+
+    if (saves.find(nome)== saves.end()) {
+        cout << "Save '" <<nome<< "' nao encontrado" << endl;
         return;
     }
-    if (!validarLixo(ss)) return;
-    cout <<"Comando 'recupera " << nome <<"'validado." << endl;
+    if (jardim!=nullptr) {
+        delete jardim;
+    }
+    jardim = new Jardim(*saves[nome]);
+    cout << "Jardim recuperado com o nome de '" <<nome<<"' " <<endl;
+    jardim->desenhar(jardineiro);
 }
 void Simulador::cmdApaga(stringstream &ss) {
     string nome;
