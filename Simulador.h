@@ -1,7 +1,3 @@
-//
-// Created by miigu on 01/11/2025.
-//
-
 #ifndef TRABALHOPOO_SIMULADOR_H
 #define TRABALHOPOO_SIMULADOR_H
 #include "mundo/Jardim.h"
