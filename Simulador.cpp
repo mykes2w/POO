@@ -663,14 +663,3 @@ void Simulador::verificarApanharFerramenta() {
         jardim->adicionarFerrRandom();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
