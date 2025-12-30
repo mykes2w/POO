@@ -269,5 +269,3 @@ void Jardim::adicionarFerrRandom() {
         }
     }
 }
-
-
