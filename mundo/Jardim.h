@@ -24,5 +24,6 @@ public:
     int getColunas() const;
     void passarTempo();
     Posicao* getPosicao(int l, int c) const;
+    void adicionarFerrRandom();
 };
 #endif //TRABALHOPOO_JARDIM_H

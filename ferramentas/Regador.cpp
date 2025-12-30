@@ -7,11 +7,11 @@ bool Regador::usar(Posicao *p) {
     if (p==nullptr) return false;
 
     int dose= Settings::Regador::dose;
-    if (quantidade>=dose) {
-        quantidade-=dose;
+    if (getQuantidade()>=dose) {
+        setQuantidade(getQuantidade() - dose);
         int aguaA = p->getAgua();
         p->setAgua(aguaA+dose);
-        cout << "Regou esta posicao , esta e a agua que resta no regador: "<< quantidade << endl;
+        cout << "Regou esta posicao , esta e a agua que resta no regador: "<< getQuantidade() << endl;
         return true;
     }else {
         cout << "O regador esta vazio" << endl;

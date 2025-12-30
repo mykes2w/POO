@@ -44,7 +44,7 @@ private:
     void cmdApaga(stringstream& ss);
     void cmdExecuta(stringstream& ss);
 
-
+    void verificarApanharFerramenta();
 public:
     Simulador();
     ~Simulador();

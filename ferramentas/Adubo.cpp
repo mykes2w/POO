@@ -9,10 +9,10 @@ bool Adubo::usar(Posicao *p) {
     }
     int dose=Settings::Adubo::dose;
 
-    if (quantidade>=dose) {
-        quantidade-=dose;
+    if (getQuantidade()>=dose) {
+        setQuantidade(getQuantidade() - dose);
         p->setNutrientes(p->getNutrientes() + dose);
-        cout<<"Adubou esta posicao , e tem isto de adubo "<< quantidade <<endl;
+        cout<<"Colocou adubo esta posicao , e tem isto de adubo: "<< getQuantidade() <<endl;
         return true;
     }else {
         cout << "O saco do adubo esta vazio" << endl;

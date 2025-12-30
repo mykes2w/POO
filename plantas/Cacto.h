@@ -4,9 +4,6 @@
 #include "Settings.h"
 
 class Cacto : public Planta {
-private:
-        int ctgAguaMais;
-        int ctgFaltaNutr;
 public:
         static const int preco=20;
         Cacto();

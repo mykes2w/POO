@@ -31,6 +31,9 @@ public:
     void adicionarFerramente(Ferramenta* f);
     Ferramenta* retirarFerramenta();
     const Ferramenta* getFerramenta() const;
+
+    Posicao(const Posicao& outra);
+    Posicao& operator=(const Posicao& outra);
 };
 
 

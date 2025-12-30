@@ -1,40 +1,40 @@
 #include "Roseira.h"
 
 Roseira::Roseira() {
-    this->idade=0;
-    this->agua = Settings::Roseira::inicial_agua;
-    this->nutrientes = Settings::Roseira::inicial_nutrientes;
+    setIdade(0);
+    setAgua(Settings::Roseira::inicial_agua);
+    setNutrientes(Settings::Roseira::inicial_nutrientes);
 }
 
 char Roseira::getChar() const {
-    return 'R';
+    return 'r';
 }
 
 bool Roseira::viver(int &aguaSolo, int &nutrientesSolo) {
-    idade++;
+    setIdade(getIdade() + 1);
 
-    this->agua -= Settings::Roseira::perda_agua;
-    this->nutrientes -= Settings::Roseira::perda_nutrientes;
+    setAgua(getAgua() - Settings::Roseira::perda_agua);
+    setNutrientes(getNutrientes() - Settings::Roseira::perda_nutrientes);
 
     if (aguaSolo >= Settings::Roseira::absorcao_agua) {
         aguaSolo -= Settings::Roseira::absorcao_agua;
-        this->agua += Settings::Roseira::absorcao_agua;
+        setAgua(getAgua() + Settings::Roseira::absorcao_agua);
     }else {
-        this->agua += aguaSolo;
+        setAgua(getAgua() + aguaSolo);
         aguaSolo= 0;
     }
 
     if (nutrientesSolo >= Settings::Roseira::absorcao_nutrientes) {
         nutrientesSolo -= Settings::Roseira::absorcao_nutrientes;
-        this->nutrientes += Settings::Roseira::absorcao_nutrientes;
+        setNutrientes(getNutrientes() + Settings::Roseira::absorcao_nutrientes);
     }else {
-        this->nutrientes += nutrientesSolo;
+        setNutrientes(getNutrientes() + nutrientesSolo);
         nutrientesSolo= 0;
     }
 
-    if (this->agua < Settings::Roseira::morre_agua_menor) {return false;}
-    if (this->nutrientes < Settings::Roseira::morre_nutrientes_menor) {return false;}
-    if (this->nutrientes > Settings::Roseira::morre_nutrientes_maior) {return false;}
+    if (getAgua() < Settings::Roseira::morre_agua_menor) {return false;}
+    if (getNutrientes() < Settings::Roseira::morre_nutrientes_menor) {return false;}
+    if (getNutrientes() > Settings::Roseira::morre_nutrientes_maior) {return false;}
 
     return true;
 }
@@ -44,14 +44,15 @@ int Roseira::getPreco() const {
 }
 
 Planta *Roseira::duplicar() {
-    if (nutrientes>Settings::Roseira::multiplica_nutrientes_maior) {
+    if (getNutrientes()>Settings::Roseira::multiplica_nutrientes_maior) {
         Roseira* filho = new Roseira();
-        this->agua/=2;
-        this->nutrientes/=2;
-        filho->agua=this->agua;
-        filho->nutrientes=this->nutrientes;
+        setAgua(getAgua() / 2);
+        setNutrientes(getNutrientes() / 2);
+        filho->setAgua(this->getAgua());
+        filho->setNutrientes(this->getNutrientes());
         return filho;
     }
+
     return nullptr;
 }
 

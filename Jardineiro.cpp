@@ -6,9 +6,12 @@ Jardineiro::Jardineiro():
     dinheiro(SALDO_INICIAL),
     contMov(0),
     contColheitas(0),
-    contPlantacoes(0)
+    contPlantacoes(0),
+    entrouTurno(false),
+    saiuTurno(false)
 {
-    dentro=true;
+    ferramentaMao=nullptr;
+    dentro=false;
 }
 
 Jardineiro::~Jardineiro() {
@@ -18,7 +21,7 @@ Jardineiro::~Jardineiro() {
 
 int Jardineiro::getLinha() const {return linha;}
 int Jardineiro::getColuna() const {return coluna;}
-char Jardineiro::getChar() const {return 'J';}
+char Jardineiro::getChar() const {return '*';}
 
 void Jardineiro::setPosicao(int l, int c) {
     linha=l;
@@ -73,18 +76,39 @@ void Jardineiro::prepNovoTurno() {
     contMov=0;
     contColheitas=0;
     contPlantacoes=0;
+    entrouTurno = false;
+    saiuTurno = false;
 }
 
-Ferramenta* Jardineiro::largarFerramente(int index) {
+Ferramenta* Jardineiro::largarFerramenta(int index) {
     if (index>=0 && index < (int)mochila.size()) {
         Ferramenta* f = mochila[index];
+        if (f==ferramentaMao) ferramentaMao=nullptr;
         mochila.erase(mochila.begin()+index);
         return f;
     }
     return nullptr;
 }
 
+Ferramenta* Jardineiro::procurarPorID(int idProcurado) {
+    for (Ferramenta* f : mochila) {
+        if (f->getId()==idProcurado) return f;
+    }
+    return nullptr;
+}
 
+void Jardineiro::removerFerrGasta(Ferramenta* f) {
+    if (f==nullptr) return;
+
+    for (auto it=mochila.begin();it!=mochila.end();it++) {
+        if (*it==f) {
+            if (f== ferramentaMao) ferramentaMao=nullptr;
+            delete *it;
+            mochila.erase(it);
+            return;
+        }
+    }
+}
 
 
 

@@ -3,12 +3,15 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+
+#include "PlantaExotica.h"
 #include "plantas/ErvaDaninha.h"
 #include "plantas/Cacto.h"
 #include "plantas/Roseira.h"
 #include "ferramentas/Regador.h"
 #include "ferramentas/Adubo.h"
 #include "ferramentas/Tesoura.h"
+#include "ferramentas/FerramentaZ.h"
 using namespace std;
 
 Simulador::Simulador() :jardim(nullptr),jardineiro(nullptr),running(true) {
@@ -49,7 +52,7 @@ void Simulador::processarComando(const string& linha)
 
     if (jardim==nullptr && comando!="jardim" && comando!="executa" && comando!="fim")
     {
-        cout << "ERRO: O jardim ainda nao foi criado. Use o comando 'jardim <l> <c>'" << endl;
+        cout << "O jardim ainda nao foi criado. Use o comando 'jardim <l> <c>'" << endl;
         return;
     }
     if (comando == "jardim") {cmdJardim(ss);}
@@ -87,16 +90,16 @@ void Simulador::processarComando(const string& linha)
     else if (comando == "fim")
     {
         running = false;
-        cout << "A terminar o simulador..." << endl;
+        cout << "A terminar o simulador" << endl;
     } else {
-        cout << "ERRO: Comando '" << comando << "' desconhecido." << endl;
+        cout << "Comando '" << comando << "' desconhecido." << endl;
     }
 }
 
 bool Simulador::validarPosicao(const std::string& pos)
 {
     if (pos.length() != 2 || !islower(pos[0]) || !islower(pos[1])) {
-        cout << "ERRO: Posicao invalida. Formato esperado: <l><c> (ex: 'ce')." << endl;
+        cout << "Posicao invalida. Formato esperado: <l><c> (ex: 'ce')." << endl;
         return false;
     }
     return true;
@@ -106,7 +109,7 @@ bool Simulador::validarLixo(std::stringstream& ss)
 {
     string lixo;
     if (ss >> lixo) {
-        cout << "ERRO: Parametros a mais no comando (a comecar por '" << lixo << "')." << endl;
+        cout << "Parametros a mais no comando (a comecar por '" << lixo << "')." << endl;
         return false;
     }
     return true;
@@ -118,11 +121,14 @@ void Simulador::cmdJardim(stringstream& ss)
     if (ss >> lin >> col) {
         if (jardim!=nullptr) {
             cout << "O jardim ja existe.  Faz 'jardim' para desenha lo " << endl;
-        } else {
-            jardim = new Jardim(lin,col);
-            cout << "Jardim de " <<lin <<"x"<<col<<" criado com sucesso"<<endl;
-            jardim->desenhar(jardineiro);
         }
+        if (lin < 1 || lin > 26 || col < 1 || col > 26) {
+            cout << "As dimensoes devem estar entre 1x1 e 26x26." << endl;
+            return;
+        }
+        jardim = new Jardim(lin, col);
+        cout << "Jardim de " << lin << "x" << col << " criado com sucesso" << endl;
+        jardim->desenhar(jardineiro);
     }else {
         if (jardim!=nullptr) {
             jardim->desenhar(jardineiro);
@@ -133,18 +139,43 @@ void Simulador::cmdJardim(stringstream& ss)
 }
 void Simulador::cmdAvanca(stringstream &ss)
 {
-    int n=1;
-    ss>>n;
-
-    if (jardim==nullptr)
-    {
-        cout <<"Cria o jardim primeiro." << endl;
+    if (jardim == nullptr) {
+        cout << "O jardim ainda nao foi criado." << endl;
         return;
     }
-    for (int i=0;i<n;i++) {
-        jardim->passarTempo();
+    int n=1;
+    if (!(ss >> n)) {
+        n = 1;
     }
-    cout << "O tempo avancou " << n << " instantes" << endl;
+    if (n <= 0) {
+        cout << "Indique um numero de instantes positivo." << endl;
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        jardim->passarTempo();
+
+        if (jardineiro->dentroJardim()) {
+            Ferramenta* naMao = jardineiro->getFerramentaMao();
+            if (naMao != nullptr) {
+                Posicao* p = jardim->getPosicao(jardineiro->getLinha(), jardineiro->getColuna());
+
+                if (naMao->usar(p)) {
+                    cout << "Ferramenta " << naMao->getChar() << " foi utilizada automaticamente na posicao (" << (char)('a' + jardineiro->getLinha()) << (char)('a' + jardineiro->getColuna()) << ")" << endl;
+
+                    if ((naMao->getChar() == 'g' || naMao->getChar() == 'a') && naMao->getQuantidade() <= 0) {
+                        cout << "A ferramenta na mao esgotou-se e foi descartada!" << endl;
+                        jardineiro->removerFerrGasta(naMao);
+                    }
+                }
+            }
+        }
+
+        jardineiro->prepNovoTurno();
+    }
+
+    cout << "Avancaram " << n << " instante(s)." << endl;
+
     jardim->desenhar(jardineiro);
 }
 
@@ -178,31 +209,49 @@ void Simulador::cmdPlanta(stringstream& ss)
         case 'e':
             novaPlanta = new ErvaDaninha();
             break;
+        case 'x':
+            novaPlanta = new PlantaExotica();
+            break;
         default:
             cout << "Tipo de planta desconhecida" << endl;
             return;
     }
 
+    if (jardineiro->getPlantacoes() >= Jardineiro::MAX_PLANTACOES) {
+        cout << "Limite de plantacoes atingido (Max: " << Jardineiro::MAX_PLANTACOES << ")" << endl;
+        return;
+    }
     if (jardim->adicionarPlanta(l, c, novaPlanta)) {
+        jardineiro->registarPlantacoes();
         cout << "Planta criada com sucesso!" << endl;
         jardim->desenhar(jardineiro);
     } else {
-        cout << "ERRO: Posicao ocupada." << endl;
+        cout << "Posicao ocupada." << endl;
         delete novaPlanta;
     }
 }
 
 void Simulador::cmdLplantas(stringstream &ss)
 {
-    if (!validarLixo(ss)) return;
-    cout << "Comando 'lplantas' validado." << endl;
+    if (jardim == nullptr) return;
+    cout << "Lista de Plantas que estao no Jardim" << endl;
+    for (int i = 0; i < jardim->getLinhas(); i++) {
+        for (int j = 0; j < jardim->getColunas(); j++) {
+            Posicao* p = jardim->getPosicao(i, j);
+            if (p->temPlanta()) {
+                Planta* pl = p->getPlanta();
+                cout << "[" << (char)('a'+i) << (char)('a'+j) << "] "
+                     << "Tipo: " << pl->getChar() << " | Idade: " << pl->getIdade() << endl;
+            }
+        }
+    }
 }
 
 void Simulador::cmdLplanta(stringstream &ss)
 {
     string pos;
     if (!(ss>>pos)) {
-        cout << "ERRO: Sintaxe invalida. Uso: lplanta <lc>" << endl;
+        cout << "Sintaxe invalida. Uso: lplanta <lc>" << endl;
         return;
     }
     if (!validarLixo(ss)) return;
@@ -231,25 +280,61 @@ void Simulador::cmdLplanta(stringstream &ss)
     }
 }
 void Simulador::cmdLarea(stringstream &ss) {
+    if (jardim == nullptr) return;
     if (!validarLixo(ss)) return;
-    cout << "Comando 'larea' validado." << endl;
+
+    cout << "Listagem da Area" << endl;
+    bool encontrou = false;
+
+    for (int i = 0; i < jardim->getLinhas(); i++) {
+        for (int j = 0; j < jardim->getColunas(); j++) {
+            Posicao* p = jardim->getPosicao(i, j);
+
+            if (p->temPlanta() || p->temFerramenta()) {
+                encontrou = true;
+                cout << "[" << (char)('a' + i) << (char)('a' + j) << "]: ";
+
+                if (p->temPlanta()) {
+                    cout << "Planta: " << p->getPlanta()->getChar() << " ";
+                }
+
+                if (p->temFerramenta()) {
+                    cout << "Ferramenta: " << p->getFerramenta()->getChar()
+                         << " (ID: " << p->getFerramenta()->getId() << ") ";
+                }
+                cout << "| Solo (A:" << p->getAgua() << " N:" << p->getNutrientes() << ")" << endl;
+            }
+        }
+    }
+
+    if (!encontrou) {
+        cout << "O solo do jardim esta atualmente limpo (sem plantas ou ferramentas)." << endl;
+    }
 }
 void Simulador::cmdLsolo(stringstream &ss)
 {
     string pos;
     int n=0;
     if (!(ss >> pos)) {
-        cout << "ERRO: Sintaxe invalida. Uso: lsolo <lc> [n]" << endl;
+        cout << "Sintaxe invalida. Uso: lsolo <lc> [n]" << endl;
         return;
     }
     ss>>n;
-    if (ss.fail() && !ss.eof()) {
-        cout << "ERRO: 'n' (raio) deve ser um numero" << endl;
-        return;
+
+    int l_origem = pos[0] - 'a';
+    int c_origem = pos[1] - 'a';
+
+    for (int i = l_origem - n; i <= l_origem + n; ++i) {
+        for (int j = c_origem - n; j <= c_origem + n; ++j) {
+            if (i >= 0 && i < jardim->getLinhas() && j >= 0 && j < jardim->getColunas()) {
+                Posicao* p = jardim->getPosicao(i, j);
+                cout << "Posicao [" << (char)('a'+i) << (char)('a'+j) << "]: ";
+                cout << "Agua: " << p->getAgua() << " | Nutrientes: " << p->getNutrientes();
+                if (p->temPlanta()) cout << " | Planta: " << p->getPlanta()->getChar();
+                cout << endl;
+            }
+        }
     }
-    if (!validarLixo(ss)) return;
-    if (!validarPosicao(pos)) return;
-    cout << "Comando 'lsolo" <<pos <<" " << (n>0 ? n:0) << "' validado" <<endl;
 }
 void Simulador::cmdLferr(stringstream &ss)
 {
@@ -261,7 +346,7 @@ void Simulador::cmdLferr(stringstream &ss)
     for (int i=0;i<tot;i++) {
         Ferramenta* f=jardineiro->getFerramenta(i);
         if (f!=nullptr) {
-            cout << i <<"Tipo="<< f->getChar() << " e Quantidade=" << f->getQuantidade() << endl;
+            cout << "ID: " << f->getId() << " | Tipo: " << f->getChar() << " | Carga/Quantidade: " << f->getQuantidade() << endl;
         }
     }
 }
@@ -296,39 +381,25 @@ void Simulador::cmdColhe(stringstream &ss)
 }
 void Simulador::cmdLarga(stringstream &ss)
 {
-    if (!jardineiro->dentroJardim()) {
-        cout << "Tens de entrar no jardim primeiro" << endl;
+    if (jardineiro->getFerramentaMao()==nullptr) {
+        cout << "Nao tens nada na mao para largar " << endl;
         return;
     }
-    int indice;
-    if (ss>>indice) {
-        Posicao* p = jardim->getPosicao(jardineiro->getLinha(),jardineiro->getColuna());
-        if (p->temFerramenta()) {
-            cout << "Ja ha uma ferramenta aqui no chao" << endl;
-            return;
-        }
-        Ferramenta* f = jardineiro->largarFerramente(indice);
-        if (f!=nullptr) {
-            p->adicionarFerramente(f);
-            cout<<"Largaste a ferramenta no chao"<<endl;
-        }else {
-            cout <<"Indice de ferramente invalido" << endl;
-        }
-    }else {
-        cout << "Tens de especificar o indice da ferramenta (ex: larga 0)" <<endl;
-    }
+
+    jardineiro->setFerramentaMao(nullptr);
+    cout << "largaste a ferramenta, agora nao tens nada nas maos" << endl;
 }
 void Simulador::cmdPega(stringstream &ss) {
-    if (!jardineiro->dentroJardim()) {
-        cout << "Tens de entrar no jardim primeiro" << endl;
-        return;
+    int idAlvo;
+    if (!(ss>>idAlvo)) {
+        cout << "Indica o numero de serie. Exemplo: pega 1" << endl;
     }
-    Posicao* p=jardim->getPosicao(jardim->getLinhas(),jardim->getColunas());
-    if (p->temFerramenta()) {
-        Ferramenta* f = p->retirarFerramenta();
-        if (jardineiro->ad)
+    Ferramenta* f =jardineiro->procurarPorID(idAlvo);
+    if (f!=nullptr) {
+        jardineiro->setFerramentaMao(f);
+        cout << "Agora tens a ferramenta" << idAlvo << " ["<<f->getChar()<<"] na mao " <<endl;
     }else {
-        cout << "Nao ha nada aqui para apanhar" <<endl;
+        cout <<"Nao estas com nenhuma com esse ID " <<idAlvo <<endl;
     }
 }
 
@@ -355,6 +426,10 @@ void Simulador::cmdCompra(stringstream &ss)
         custo = Tesoura::custo;
         f=new Tesoura();
         cout << "Compraste um tesoura" << endl;
+    }else if (tipo == 'z') {
+        custo = FerramentaZ::custo;
+        f = new FerramentaZ();
+        cout << "Compraste a Ferramenta Especial Z" << endl;
     }else {
         cout << "Essa ferramenta nao existe" << endl;
         return;
@@ -379,7 +454,7 @@ void Simulador::cmdMove(const string &direcao)
         return;
     }
     if (jardim==nullptr) {
-        cout <<"ERRO: Nenhum jardim criado." << endl;
+        cout <<"Nenhum jardim criado." << endl;
         return;
     }
     if (jardineiro->getMov() >= Jardineiro::MAX_MOV) {
@@ -390,23 +465,24 @@ void Simulador::cmdMove(const string &direcao)
     int l = jardineiro->getLinha();
     int c = jardineiro->getColuna();
 
-    if (direcao=="cima") {
+    if (direcao=="c") {
         l--;
-    }else if (direcao=="baixo") {
+    }else if (direcao=="b") {
         l++;
-    }else if (direcao=="esquerda") {
+    }else if (direcao=="e") {
         c--;
-    }else if (direcao=="direita") {
+    }else if (direcao=="d") {
         c++;
     }else {
-        cout << "Direcao invalida , tem de ser um destes 'cima' , 'baixo' , 'esquerda' , 'direita' " << endl;
+        cout << "Direcao invalida , tem de ser um destes 'c' , 'b' , 'e' , 'd' " << endl;
         return;
     }
 
     if (l>=0 && l < jardim->getLinhas() && c >= 0 && c < jardim->getColunas()) {
         jardineiro->setPosicao(l,c);
         jardineiro->registarMov();
-        cout << "Movimentos fietos. " <<jardineiro->getMov() << endl;
+        verificarApanharFerramenta();
+        cout << "Movimentos feitos. " <<jardineiro->getMov() << endl;
         cout << "Jardineiro foi para a " << l <<" "  << c << endl;
         jardim->desenhar(jardineiro);
     }else {
@@ -414,22 +490,41 @@ void Simulador::cmdMove(const string &direcao)
     }
 }
 void Simulador::cmdEntra(stringstream &ss) {
-    if (jardineiro->dentroJardim()) {
-        cout<<"O jardineiro ja est dentro do jardim" << endl;
+    if (jardim == nullptr) {
+        cout << "O jardim ainda nao foi criado." << endl;
         return;
     }
-    int l,c;
-    if (ss>>l>>c) {
-        if (l>=0 && l<jardim->getLinhas() && c>=0 && c<jardim->getColunas()) {
-            jardineiro->setPosicao(l,c);
-            jardineiro->setDentro(true);
-            cout << "Entraste no jardim em " <<l<< " " << c<< endl;
-        }else {
-            cout << "Posicao invalida" <<endl;
+
+    string pos;
+    if (!(ss >> pos)) {
+        cout << "Sintaxe: entra <lc> (ex: entra aa)" << endl;
+        return;
+    }
+
+    if (jardineiro->getEntrouTurno()) {
+        cout << "So podes entrar ou teletransportar-te uma vez por turno." << endl;
+        return;
+    }
+
+    if (!validarPosicao(pos)) return;
+
+    int l = pos[0] - 'a';
+    int c = pos[1] - 'a';
+
+    if (l >= 0 && l < jardim->getLinhas() && c >= 0 && c < jardim->getColunas()) {
+        if (jardineiro->getEntrouTurno()) {
+            cout << "So podes entrar/teletransportar uma vez por turno." << endl;
+            return;
         }
-    }else {
+
+        jardineiro->setPosicao(l, c);
         jardineiro->setDentro(true);
-        cout << "Entraste no jardim" <<endl;
+        jardineiro->setEntrouTurno(true);
+
+        verificarApanharFerramenta();
+        jardim->desenhar(jardineiro);
+    } else {
+        cout << "A posicao " << pos << " esta fora dos limites." << endl;
     }
 }
 void Simulador::cmdSai(stringstream &ss) {
@@ -437,7 +532,12 @@ void Simulador::cmdSai(stringstream &ss) {
         cout << "O jardineiro ja esta fora do jardim" << endl;
         return;
     }
+    if (jardineiro->getSaiuTurno()) {
+        cout << "O jardineiro so pode sair uma vez por turno." << endl;
+        return;
+    }
     jardineiro->setDentro(false);
+    jardineiro->setSaiuTurno(true);
     cout << "O jardineiro saiu do jardim" << endl;
 }
 void Simulador::cmdGrava(stringstream &ss) {
@@ -465,6 +565,7 @@ void Simulador::cmdRecupera(stringstream &ss) {
     }
     if (jardim!=nullptr) {
         delete jardim;
+        jardim=nullptr;
     }
     jardim = new Jardim(*saves[nome]);
     cout << "Jardim recuperado com o nome de '" <<nome<<"' " <<endl;
@@ -473,23 +574,29 @@ void Simulador::cmdRecupera(stringstream &ss) {
 void Simulador::cmdApaga(stringstream &ss) {
     string nome;
     if (!(ss >> nome)) {
-        cout << "ERRO: Sintaxe invalida. Uso:apaga <nome>" << endl;
+        cout << "Sintaxe invalida. Uso:apaga <nome>" << endl;
         return;
     }
-    if (!validarLixo(ss)) return;
-    cout << "Comando 'apaga'" << nome <<"'validado." << endl;
+    auto it = saves.find(nome);
+    if (it != saves.end()) {
+        delete it->second;
+        saves.erase(it);
+        cout << "Copia '" << nome << "' apagada com sucesso." << endl;
+    } else {
+        cout << "Nome de copia nao encontrado." << endl;
+    }
 }
 void Simulador::cmdExecuta(stringstream &ss) {
     string nomeFicheiro;
     if (!(ss >> nomeFicheiro)) {
-        cout << "ERRO: Sintaxe invalida. Uso:executa <nome-do-ficheiro>" << endl;
+        cout << "Sintaxe invalida. Uso:executa <nome-do-ficheiro>" << endl;
         return;
     }
     if (!validarLixo(ss)) return;
     cout << "A executar comandos do ficheiro: "<<nomeFicheiro<<endl;
     ifstream ficheiro(nomeFicheiro);
     if (!ficheiro.is_open()) {
-        cout << "ERRO: Nao foi possivel abrir o ficheiro '" << nomeFicheiro << "'" << endl;
+        cout << "Nao foi possivel abrir o ficheiro '" << nomeFicheiro << "'" << endl;
         return;
     }
 
@@ -506,10 +613,6 @@ void Simulador::cmdExecuta(stringstream &ss) {
 
 void Simulador::cmdUsar(int index) {
     if (jardineiro==nullptr || jardim == nullptr) return;
-    if (!jardineiro->dentroJardim()) {
-        cout << "Tens de entrar no jardim primeiro" << endl;
-        return;
-    }
 
     Ferramenta* f = jardineiro->getFerramenta(index);
 
@@ -518,18 +621,46 @@ void Simulador::cmdUsar(int index) {
         return;
     }
 
+
     int l=jardineiro->getLinha();
     int c=jardineiro->getColuna();
 
     Posicao* p=jardim->getPosicao(l,c);
 
-    if (p!=nullptr) {
-        bool suc=f->usar(p);
-        if (suc) {
-            cout << "Usaste a ferramenta" << endl;
-        }else {
-            cout << "nao foi possivel usar a ferramenta" << endl;
+    if (p == nullptr) {
+        cout << "O jardineiro nao esta numa posicao valida para usar ferramentas." << endl;
+        return;
+    }
+
+    if (f->usar(p)) {
+
+        if ((f->getChar() == 'g' || f->getChar() == 'a') && f->getQuantidade() <= 0) {
+            cout << "A ferramenta " << f->getChar() << " (ID: " << f->getId() << ") esgotou-se e o jardineiro descartou-a imediatamente!" << endl;
+            jardineiro->removerFerrGasta(f);
         }
+
+        jardim->desenhar(jardineiro);
+    }
+    else {
+        if ((f->getChar() == 'g' || f->getChar() == 'a') && f->getQuantidade() <= 0) {
+            cout << "Esta ferramenta esta vazia e sera removida do inventario." << endl;
+            jardineiro->removerFerrGasta(f);
+        }
+    }
+}
+
+void Simulador::verificarApanharFerramenta() {
+    if (jardim==nullptr || jardineiro==nullptr) return;
+
+    Posicao* p= jardim->getPosicao(jardineiro->getLinha(),jardineiro->getColuna());
+
+    if (p!=nullptr && p->temFerramenta()) {
+        Ferramenta* f = p->retirarFerramenta();
+        jardineiro->apanharFerramenta(f);
+
+        cout << "Apanhaste automaticamente a ferramenta: " << f->getChar() << " (ID:" << f->getId() << ")" << endl;
+
+        jardim->adicionarFerrRandom();
     }
 }
 

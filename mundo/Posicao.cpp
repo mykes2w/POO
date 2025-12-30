@@ -26,7 +26,7 @@ char Posicao::getChar() const {
     if (ferramenta!=nullptr) {
         return ferramenta->getChar();
     }
-    return '_';
+    return ' ';
 }
 bool Posicao::temPlanta() const {
     return planta != nullptr;
@@ -70,6 +70,27 @@ Ferramenta *Posicao::retirarFerramenta() {
 
 const Ferramenta* Posicao::getFerramenta() const {
     return ferramenta;
+}
+
+Posicao::Posicao(const Posicao& outra) {
+    agua = outra.agua;
+    nutrientes = outra.nutrientes;
+    planta = outra.planta ? outra.planta->clone() : nullptr;
+    ferramenta = outra.ferramenta ? outra.ferramenta->clone() : nullptr;
+}
+
+Posicao& Posicao::operator=(const Posicao& outra) {
+    if (this != &outra) {
+        delete planta;
+        delete ferramenta;
+
+        agua = outra.agua;
+        nutrientes = outra.nutrientes;
+
+        planta = outra.planta ? outra.planta->clone() : nullptr;
+        ferramenta = outra.ferramenta ? outra.ferramenta->clone() : nullptr;
+    }
+    return *this;
 }
 
 

@@ -2,26 +2,26 @@
 #include <complex>
 
 ErvaDaninha::ErvaDaninha() {
-    this->agua=Settings::ErvaDaninha::inicial_agua;
-    this->nutrientes=Settings::ErvaDaninha::inicial_nutrientes;
-    this->idade=0;
+    setAgua(Settings::ErvaDaninha::inicial_agua);
+    setNutrientes(Settings::ErvaDaninha::inicial_nutrientes);
+    setIdade(0);
     this->contReproducao=0;
 }
 
 char ErvaDaninha::getChar() const {
-    return 'E';
+    return 'e';
 }
 
 bool ErvaDaninha::viver(int &aguaSolo,int &nutrientesSolo) {
-    idade++;
+    setIdade(getIdade() + 1);
     contReproducao++;
     if (aguaSolo> 0) {
         int absAgua = Settings::ErvaDaninha::absorcao_agua;
         if (aguaSolo>=absAgua) {
             aguaSolo-=absAgua;
-            this->agua+=absAgua;
+            setAgua(getAgua() + absAgua);
         }else {
-            this->agua+=aguaSolo;
+            setAgua(getAgua() + aguaSolo);
             aguaSolo=0;
         }
     }
@@ -29,20 +29,20 @@ bool ErvaDaninha::viver(int &aguaSolo,int &nutrientesSolo) {
         int absNutr=Settings::ErvaDaninha::absorcao_nutrientes;
         if (nutrientesSolo>=absNutr) {
             nutrientesSolo-=absNutr;
-            this->nutrientes+=absNutr;
+            setNutrientes(getNutrientes() + absNutr);
         }else {
-            this->nutrientes+=nutrientesSolo;
+            setNutrientes(getNutrientes() + nutrientesSolo);
             nutrientesSolo=0;
         }
     }
-    if (idade>=60) {
+    if (getIdade()>=60) {
         return false;
     }
     return true;
 }
 
 Planta *ErvaDaninha::duplicar() {
-    if (this->nutrientes>Settings::ErvaDaninha::multiplica_nutrientes_maior && this->contReproducao>=5) {
+    if (getNutrientes()>Settings::ErvaDaninha::multiplica_nutrientes_maior && this->contReproducao>=5) {
         this->contReproducao=0;
         return new ErvaDaninha();
     }

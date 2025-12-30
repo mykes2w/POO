@@ -12,6 +12,8 @@ private:
     std::vector<Ferramenta*> mochila;
     bool dentro;
     int dinheiro,contMov,contColheitas,contPlantacoes;
+    Ferramenta* ferramentaMao;
+    bool entrouTurno,saiuTurno;
 public:
     static const int SALDO_INICIAL=500;
     static const int MAX_MOV=10;
@@ -29,7 +31,7 @@ public:
     void apanharFerramenta(Ferramenta* f);
     Ferramenta* getFerramenta(int index) const;
     int getNumFerramentas() const;
-    Ferramenta* largarFerramente(int index);
+    Ferramenta* largarFerramenta(int index);
 
     int getDinheiro() const;
     void gastarDinheiro(int valor);
@@ -41,9 +43,17 @@ public:
     int getPlantacoes() const;
     void registarPlantacoes();
     void prepNovoTurno();
-
+    bool getEntrouTurno() const { return entrouTurno; }
+    void setEntrouTurno(bool valor) { entrouTurno=valor; }
+    bool getSaiuTurno() const { return saiuTurno; }
+    void setSaiuTurno(bool valor) { saiuTurno=valor; }
     bool dentroJardim() const {return dentro;}
     void setDentro(bool d) {dentro=d;}
+
+    void setFerramentaMao(Ferramenta* f){ferramentaMao=f;}
+    Ferramenta* getFerramentaMao() const {return ferramentaMao;}
+    Ferramenta* procurarPorID(int idProcurado);
+    void removerFerrGasta(Ferramenta* f);
 };
 
 
