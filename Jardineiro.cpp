@@ -109,11 +109,3 @@ void Jardineiro::removerFerrGasta(Ferramenta* f) {
         }
     }
 }
-
-
-
-
-
-
-
-
